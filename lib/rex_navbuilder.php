@@ -9,7 +9,7 @@ class rex_navbuilder
      * 
      * @return string
      */
-     
+
     public static function get($name)
     {
         $depth = 1;
@@ -44,7 +44,7 @@ class rex_navbuilder
                 $children = self::buildNavigation($item['children'], $depth + 1);
             }
 
-            if ($item['type'] == 'intern' && rex_article::get($item["href"]) ){
+            if ($item['type'] == 'intern' && rex_article::get($item["href"])) {
                 $active = '';
                 if ($item["href"] == rex_article::getCurrentId()) {
                     $active = " rex-active";
@@ -55,7 +55,6 @@ class rex_navbuilder
             } else if ($item['type'] == 'group') {
                 $list .= '<li class="rex-link-group">' . $item["text"] . $children . '</li>';
             }
-
         }
         return '<ul class="rex-navi-depth-' . $depth . '">' . $list . '</ul>';
     }
@@ -65,10 +64,12 @@ class rex_navbuilder
      * 
      * @param string $name
      * 
+     * @api
      * @return array
      */
 
-    public static function getStructure($name) {
+    public static function getStructure($name)
+    {
 
         $menu = rex_navbuilder_navigation::query()
             ->select('id')
@@ -77,7 +78,7 @@ class rex_navbuilder
             ->findOne();
 
         $items = json_decode($menu->structure, true);
-       
+
         return self::buildStructure($items);
     }
 
@@ -89,11 +90,12 @@ class rex_navbuilder
      * @return array
      */
 
-    private static function buildStructure($items) {
+    private static function buildStructure($items)
+    {
         $list = [];
 
-        foreach ($items as $item):
-        
+        foreach ($items as $item) :
+
             $data = [
                 "type" => $item["type"]
             ];
@@ -103,25 +105,22 @@ class rex_navbuilder
                 $data["children"] = self::buildStructure($item['children']);
             }
 
-            if ($item['type'] === 'intern' && rex_article::get($item["href"]) ){
-                
+            if ($item['type'] === 'intern' && rex_article::get($item["href"])) {
+
                 $data["id"] = $item["href"];
                 $data["active"] = $item["href"] == rex_article::getCurrentId();
                 $data["name"] = rex_article::get($item["href"])->getName();
-
             } else if ($item['type'] === 'extern') {
 
                 $data["name"] = $item["text"];
                 $data["href"] = $item["href"];
-
             } else if ($item['type'] === 'group') {
 
                 $data["name"] = $item["text"];
-
             }
 
             $list[] = $data;
-        
+
         endforeach;
 
         return $list;
